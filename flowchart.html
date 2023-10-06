@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Flowchart</title>
+    <style>
+        /* Add any necessary CSS styling here */
+        #tooltip {
+            position: absolute;
+            opacity: 0;
+            background-color: white;
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 5px;
+            pointer-events: none;
+            /* Prevents the tooltip from interfering with mouse events */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tooltip"></div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Your D3.js script comes here -->
+    <script>
+        // All the D3.js code we've been working on.
+        const civilizations = [
+            {
+                name: "Ancient Egypt",
+                start: -3100,
+                end: -30,
+                color: "blue",
+                leadingTech: "Pyramid Construction, Papyrus making",
+                currency: "Deben",
+                tradePartners: ["Nubia", "Canaan", "Indus Valley"],
+                detailsLink: "/details/AncientEgypt"
+            },
+            {
+                name: "Roman Empire",
+                start: -27,
+                end: 476,
+                color: "red",
+                leadingTech: "Roads, Aqueducts",
+                currency: "Denarius",
+                tradePartners: ["Han Dynasty", "Parthian Empire", "Carthaginians"],
+                detailsLink: "/details/RomanEmpire"
+            },
+            // ... add more civilizations as needed
+        ];
+        function showDetails(d) {
+            // Create the details panel (rounded rectangle)
+            const panel = svg.append("rect")
+                .attr("x", width / 4)
+                .attr("y", height / 4)
+                .attr("width", width / 2)
+                .attr("height", height / 2)
+                .attr("rx", 15)  // for rounded corners
+                .attr("ry", 15)
+                .attr("fill", "white")
+                .attr("stroke", "black");
+
+            // Positional offsets for text placement
+            let yOffset = 30;
+
+            // Add civilization name
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", (height / 4) + yOffset)
+                .attr("text-anchor", "middle")
+                .text(d.name);
+
+            yOffset += 20;
+
+            // Function to add subsequent text lines
+            function addTextLine(label, value) {
+                svg.append("text")
+                    .attr("x", (width / 4) + 20)
+                    .attr("y", (height / 4) + yOffset)
+                    .text(label + ": " + value);
+                yOffset += 20;
+            }
+
+            addTextLine("Leading Tech", d.leadingTech);
+            addTextLine("Currency", d.currency);
+            addTextLine("Trade Partners", d.tradePartners.join(", "));
+
+            // Add a 'More Details' link
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", (3 * height / 4) - 20)
+                .attr("text-anchor", "middle")
+                .attr("fill", "blue")
+                .attr("style", "cursor:pointer; text-decoration:underline;")
+                .text("More Details")
+                .on("click", function () {
+                    window.location.href = d.detailsLink;
+                });
+
+            // Add a 'Close' button
+            svg.append("text")
+                .attr("x", (3 * width / 4) - 20)
+                .attr("y", (height / 4) + 20)
+                .attr("fill", "red")
+                .attr("style", "cursor:pointer;")
+                .text("X")
+                .on("click", function () {
+                    panel.remove();
+                    d3.selectAll("text").remove();
+                    drawBars(); // Redraw bars and their interactions
+                });
+        }
+        function drawBars() {
+            svg.selectAll("rect")
+                // ... rest of the attributes ...
+                .on("click", function (event, d) {
+                    showDetails(d);
+                });
+        }
+
+        drawBars(); // Call this function initially to draw the bars
+
+
+    </script>
+
+</body>
+
+</html>
